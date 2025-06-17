@@ -66,12 +66,14 @@ npm run build
 
 ## 3. Configuration
 
-### Environment Variables
+### Authentication Methods
 
-Create a `.env` file or set the following environment variables:
+#### Method 1: Environment Variable (Traditional)
+
+Set your access token as an environment variable for automatic authentication:
 
 ```bash
-# Required
+# Required for environment-based auth
 META_ACCESS_TOKEN=your_access_token_here
 
 # Optional
@@ -85,6 +87,13 @@ MCP_SERVER_VERSION=1.0.0
 LOG_LEVEL=info
 ```
 
+#### Method 2: Dynamic Token Authentication (New!)
+
+With dynamic authentication, you don't need to set any environment variables. Instead, you provide your access token with each tool call. This is ideal for:
+- Managing multiple ad accounts with different tokens
+- Enhanced security through token isolation
+- Temporary access without configuration changes
+
 ### Claude Desktop Configuration
 
 Add the server to your Claude Desktop configuration file:
@@ -92,6 +101,7 @@ Add the server to your Claude Desktop configuration file:
 **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
+#### Option A: With Environment Token
 ```json
 {
   "mcpServers": {
@@ -100,6 +110,17 @@ Add the server to your Claude Desktop configuration file:
       "env": {
         "META_ACCESS_TOKEN": "your_access_token_here"
       }
+    }
+  }
+}
+```
+
+#### Option B: With Dynamic Tokens
+```json
+{
+  "mcpServers": {
+    "meta-ads": {
+      "command": "meta-ads-mcp"
     }
   }
 }
@@ -124,22 +145,33 @@ For development/local setup:
 
 ### Test the Connection
 
+#### With Environment Token:
+
 1. **Check Server Health**:
-   Use the health check tool to verify everything is working:
    ```
    Ask Claude: "Check the health of the Meta Marketing API server"
    ```
 
 2. **List Ad Accounts**:
-   Verify access to your ad accounts:
    ```
    Ask Claude: "Show me my Meta ad accounts"
    ```
 
-3. **Test Rate Limits**:
-   Check your current rate limit status:
+#### With Dynamic Token:
+
+1. **Check Server Health with Token**:
    ```
-   Ask Claude: "What are the capabilities of the Meta Marketing API server?"
+   Ask Claude: "Check the health of the Meta Marketing API server using access token EAAxxxxxx"
+   ```
+
+2. **List Ad Accounts with Token**:
+   ```
+   Ask Claude: "Show me ad accounts using access token EAAxxxxxx"
+   ```
+
+3. **Campaign Operations with Token**:
+   ```
+   Ask Claude: "List campaigns for account 123456789 using access token EAAxxxxxx"
    ```
 
 ### Common Issues and Solutions
@@ -169,8 +201,10 @@ For development/local setup:
 ### Token Security
 - Never commit access tokens to version control
 - Use environment variables or secure secret management
+- Consider using dynamic tokens for enhanced security
 - Rotate tokens regularly (recommended every 60 days)
 - Use the minimum required permissions
+- Dynamic tokens provide better isolation between accounts
 
 ### Network Security
 - Use HTTPS for all communications

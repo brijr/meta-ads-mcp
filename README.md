@@ -32,12 +32,13 @@ A comprehensive Model Context Protocol (MCP) server that enables AI assistants l
 - 📸 Creative performance analysis
 
 ### **Enterprise Features**
-- 🔐 Secure OAuth 2.0 authentication
+- 🔐 Secure OAuth 2.0 authentication with dynamic token support
 - ⚡ Automatic rate limiting with exponential backoff
 - 🔄 Pagination support for large datasets
 - 🛡️ Comprehensive error handling
 - 📚 Rich MCP resources for contextual data access
 - 🌐 Multi-account support
+- 🔑 Per-request access token authentication
 
 ## 📦 Installation
 
@@ -65,6 +66,8 @@ npm run build
 
 
 ### 2. Configure Claude Desktop
+
+#### Option A: With Environment Token
 Add to your `claude_desktop_config.json`:
 
 ```json
@@ -78,6 +81,24 @@ Add to your `claude_desktop_config.json`:
     }
   }
 }
+```
+
+#### Option B: With Dynamic Tokens (New!)
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "meta-ads": {
+      "command": "meta-ads-mcp"
+    }
+  }
+}
+```
+
+Then provide your access token when calling any tool:
+```
+List campaigns for account 123456789 using access token EAAxxxxxx
 ```
 
 ### 3. Restart Claude Desktop
@@ -144,9 +165,24 @@ The server provides rich contextual data through MCP resources:
 
 ## 🔧 Configuration
 
+### Authentication Options
+
+#### 1. Environment Variable (Traditional)
+```bash
+# Set once in your configuration
+META_ACCESS_TOKEN=your_access_token_here
+```
+
+#### 2. Dynamic Tokens (New!)
+Provide tokens per-request for enhanced security and multi-account support:
+- No environment configuration needed
+- Pass `access_token` parameter with any tool call
+- Ideal for managing multiple ad accounts
+- Better security isolation
+
 ### Environment Variables
 ```bash
-# Required
+# Optional - can be provided per-request instead
 META_ACCESS_TOKEN=your_access_token_here
 
 # Optional
@@ -165,6 +201,7 @@ See [Configuration Guide](docs/configuration.md) for detailed setup options.
 - **[Setup Guide](docs/setup.md)** - Complete installation and configuration
 - **[Tools Reference](docs/tools-reference.md)** - All available tools and resources
 - **[Configuration Guide](docs/configuration.md)** - Advanced configuration options
+- **[Dynamic Token Usage](examples/dynamic-token-usage.md)** - Examples using per-request authentication
 
 ## 🏗️ Architecture
 
@@ -192,9 +229,11 @@ See [Configuration Guide](docs/configuration.md) for detailed setup options.
 
 ### Token Security
 - ✅ Environment variable configuration
+- ✅ Dynamic per-request token support
 - ✅ No token logging or exposure
 - ✅ Automatic token validation
 - ✅ Secure credential management
+- ✅ Multi-account token isolation
 
 ### API Management
 - ✅ Rate limit compliance

@@ -32,7 +32,8 @@ export class MetaApiClient {
     method: 'GET' | 'POST' | 'DELETE' = 'GET',
     body?: any,
     accountId?: string,
-    isWriteCall: boolean = false
+    isWriteCall: boolean = false,
+    accessToken?: string
   ): Promise<T> {
     const url = `${this.auth.getBaseUrl()}/${this.auth.getApiVersion()}/${endpoint}`;
     
@@ -42,7 +43,7 @@ export class MetaApiClient {
     }
 
     return retryWithBackoff(async () => {
-      const headers = this.auth.getAuthHeaders();
+      const headers = this.auth.getAuthHeaders(accessToken);
       
       const requestOptions: any = {
         method,
@@ -83,24 +84,35 @@ export class MetaApiClient {
   }
 
   // Account Methods
-  async getAdAccounts(): Promise<AdAccount[]> {
+  async getAdAccounts(accessToken?: string): Promise<AdAccount[]> {
     const response = await this.makeRequest<MetaApiResponse<AdAccount>>(
-      'me/adaccounts?fields=id,name,account_status,balance,currency,timezone_name,business'
+      'me/adaccounts?fields=id,name,account_status,balance,currency,timezone_name,business',
+      'GET',
+      null,
+      undefined,
+      false,
+      accessToken
     );
     return response.data;
   }
 
-  async getAdAccount(accountId: string): Promise<AdAccount> {
+  async getAdAccount(accountId: string, accessToken?: string): Promise<AdAccount> {
     const formattedAccountId = this.auth.getAccountId(accountId);
     return this.makeRequest<AdAccount>(
-      `${formattedAccountId}?fields=id,name,account_status,balance,currency,timezone_name,business`
+      `${formattedAccountId}?fields=id,name,account_status,balance,currency,timezone_name,business`,
+      'GET',
+      null,
+      undefined,
+      false,
+      accessToken
     );
   }
 
   // Campaign Methods
   async getCampaigns(
     accountId: string, 
-    params: PaginationParams & { status?: string, fields?: string[] } = {}
+    params: PaginationParams & { status?: string, fields?: string[] } = {},
+    accessToken?: string
   ): Promise<PaginatedResult<Campaign>> {
     const formattedAccountId = this.auth.getAccountId(accountId);
     const { status, fields, ...paginationParams } = params;
@@ -119,15 +131,22 @@ export class MetaApiClient {
       `${formattedAccountId}/campaigns?${query}`,
       'GET',
       null,
-      formattedAccountId
+      formattedAccountId,
+      false,
+      accessToken
     );
     
     return PaginationHelper.parsePaginatedResponse(response);
   }
 
-  async getCampaign(campaignId: string): Promise<Campaign> {
+  async getCampaign(campaignId: string, accessToken?: string): Promise<Campaign> {
     return this.makeRequest<Campaign>(
-      `${campaignId}?fields=id,name,objective,status,effective_status,created_time,updated_time,start_time,stop_time,budget_remaining,daily_budget,lifetime_budget,account_id`
+      `${campaignId}?fields=id,name,objective,status,effective_status,created_time,updated_time,start_time,stop_time,budget_remaining,daily_budget,lifetime_budget,account_id`,
+      'GET',
+      null,
+      undefined,
+      false,
+      accessToken
     );
   }
 

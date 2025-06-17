@@ -9,19 +9,18 @@ export class AuthManager {
   }
 
   private validateConfig(): void {
-    if (!this.config.accessToken) {
-      throw new Error(
-        "Meta access token is required. Set META_ACCESS_TOKEN environment variable."
-      );
-    }
-
-    if (this.config.accessToken.length < 10) {
+    // Access token is now optional at startup, can be provided per-request
+    if (this.config.accessToken && this.config.accessToken.length < 10) {
       throw new Error("Invalid Meta access token format.");
     }
   }
 
-  getAccessToken(): string {
-    return this.config.accessToken;
+  getAccessToken(providedToken?: string): string {
+    const token = providedToken || this.config.accessToken;
+    if (!token) {
+      throw new Error("Access token is required. Provide via parameter or META_ACCESS_TOKEN environment variable.");
+    }
+    return token;
   }
 
   getApiVersion(): string {
@@ -32,18 +31,19 @@ export class AuthManager {
     return this.config.baseUrl || "https://graph.facebook.com";
   }
 
-  getAuthHeaders(): Record<string, string> {
+  getAuthHeaders(providedToken?: string): Record<string, string> {
     return {
-      Authorization: `Bearer ${this.getAccessToken()}`,
+      Authorization: `Bearer ${this.getAccessToken(providedToken)}`,
       "Content-Type": "application/json",
       "User-Agent": "meta-ads-mcp/1.0.0",
     };
   }
 
-  async validateToken(): Promise<boolean> {
+  async validateToken(providedToken?: string): Promise<boolean> {
     try {
+      const token = this.getAccessToken(providedToken);
       const response = await fetch(
-        `${this.getBaseUrl()}/${this.getApiVersion()}/me?access_token=${this.getAccessToken()}`
+        `${this.getBaseUrl()}/${this.getApiVersion()}/me?access_token=${token}`
       );
       return response.ok;
     } catch (error) {
@@ -65,14 +65,15 @@ export class AuthManager {
     return new AuthManager(config);
   }
 
-  async refreshTokenIfNeeded(): Promise<string> {
-    const isValid = await this.validateToken();
+  async refreshTokenIfNeeded(providedToken?: string): Promise<string> {
+    const token = this.getAccessToken(providedToken);
+    const isValid = await this.validateToken(providedToken);
     if (!isValid) {
       throw new Error(
         "Access token is invalid or expired. Please generate a new token."
       );
     }
-    return this.config.accessToken;
+    return token;
   }
 
   getAccountId(accountIdOrNumber: string): string {

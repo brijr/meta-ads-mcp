@@ -17,11 +17,17 @@ async function main() {
     // Initialize authentication
     const auth = AuthManager.fromEnvironment();
     
-    // Validate token on startup
-    const isValidToken = await auth.validateToken();
-    if (!isValidToken) {
-      console.error('Invalid Meta access token. Please check your META_ACCESS_TOKEN environment variable.');
-      process.exit(1);
+    // Skip token validation if no environment token provided
+    // Users can provide tokens dynamically via tool parameters
+    if (process.env.META_ACCESS_TOKEN) {
+      const isValidToken = await auth.validateToken();
+      if (!isValidToken) {
+        console.error('Invalid Meta access token. Please check your META_ACCESS_TOKEN environment variable.');
+        process.exit(1);
+      }
+      console.error('✅ Environment access token validated');
+    } else {
+      console.error('⚠️  No environment access token provided. Tokens must be provided via tool parameters.');
     }
 
     // Initialize Meta API client
@@ -45,9 +51,15 @@ async function main() {
     registerAudienceResources(server, metaClient);
 
     // Add account discovery tool
-    server.tool('get_ad_accounts', {}, async () => {
+    server.tool('get_ad_accounts', {
+      access_token: {
+        type: 'string',
+        description: 'Meta Marketing API access token (if not provided via environment)',
+        optional: true
+      }
+    }, async ({ access_token }) => {
       try {
-        const accounts = await metaClient.getAdAccounts();
+        const accounts = await metaClient.getAdAccounts(access_token);
         
         const accountsData = accounts.map(account => ({
           id: account.id,
@@ -88,9 +100,15 @@ async function main() {
     });
 
     // Add server health check tool
-    server.tool('health_check', {}, async () => {
+    server.tool('health_check', {
+      access_token: {
+        type: 'string',
+        description: 'Meta Marketing API access token (if not provided via environment)',
+        optional: true
+      }
+    }, async ({ access_token }) => {
       try {
-        const accounts = await metaClient.getAdAccounts();
+        const accounts = await metaClient.getAdAccounts(access_token);
         const response = {
           status: 'healthy',
           server_name: 'Meta Marketing API Server',

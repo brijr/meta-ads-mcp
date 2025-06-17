@@ -14,6 +14,7 @@ export const ListCampaignsSchema = z.object({
     .default(25)
     .describe("Number of campaigns to return"),
   after: z.string().optional().describe("Pagination cursor for next page"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const CreateCampaignSchema = z.object({
@@ -46,6 +47,7 @@ export const CreateCampaignSchema = z.object({
     .string()
     .optional()
     .describe("Campaign stop time (ISO 8601 format)"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const UpdateCampaignSchema = z.object({
@@ -73,10 +75,12 @@ export const UpdateCampaignSchema = z.object({
     .string()
     .optional()
     .describe("New campaign stop time (ISO 8601 format)"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const DeleteCampaignSchema = z.object({
   campaign_id: z.string().describe("Campaign ID to delete"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 // Ad Set Management Schemas
@@ -94,6 +98,7 @@ export const ListAdSetsSchema = z.object({
     .default(25)
     .describe("Number of ad sets to return"),
   after: z.string().optional().describe("Pagination cursor for next page"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const CreateAdSetSchema = z.object({
@@ -207,6 +212,7 @@ export const CreateAdSetSchema = z.object({
     .enum(["ACTIVE", "PAUSED"])
     .default("PAUSED")
     .describe("Initial ad set status"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 // Analytics Schemas
@@ -254,6 +260,7 @@ export const GetInsightsSchema = z.object({
     .max(100)
     .default(25)
     .describe("Number of insights to return"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const ComparePerformanceSchema = z.object({
@@ -292,6 +299,7 @@ export const ComparePerformanceSchema = z.object({
     .array(z.string())
     .default(["impressions", "clicks", "spend", "ctr", "cpc"])
     .describe("Metrics to compare"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const ExportInsightsSchema = z.object({
@@ -330,6 +338,7 @@ export const ExportInsightsSchema = z.object({
     .array(z.string())
     .optional()
     .describe("Breakdown dimensions to include"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 // Audience Management Schemas
@@ -346,6 +355,7 @@ export const ListAudiencesSchema = z.object({
     .default(25)
     .describe("Number of audiences to return"),
   after: z.string().optional().describe("Pagination cursor for next page"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const CreateCustomAudienceSchema = z.object({
@@ -384,6 +394,7 @@ export const CreateCustomAudienceSchema = z.object({
     .any()
     .optional()
     .describe("Rule definition for the audience (depends on subtype)"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const CreateLookalikeAudienceSchema = z.object({
@@ -397,6 +408,7 @@ export const CreateLookalikeAudienceSchema = z.object({
     .max(0.2)
     .describe("Ratio of the population to target (0.01 = 1%, 0.2 = 20%)"),
   description: z.string().optional().describe("Lookalike audience description"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const EstimateAudienceSizeSchema = z.object({
@@ -471,6 +483,7 @@ export const EstimateAudienceSizeSchema = z.object({
     })
     .describe("Targeting parameters for size estimation"),
   optimization_goal: z.string().describe("Optimization goal for the estimate"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 // Creative Management Schemas
@@ -483,6 +496,7 @@ export const ListCreativesSchema = z.object({
     .default(25)
     .describe("Number of creatives to return"),
   after: z.string().optional().describe("Pagination cursor for next page"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const CreateAdCreativeSchema = z.object({
@@ -506,6 +520,7 @@ export const CreateAdCreativeSchema = z.object({
     .describe("Call to action configuration"),
   link_url: z.string().url().optional().describe("Destination URL for the ad"),
   display_link: z.string().optional().describe("Display link text"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 export const PreviewAdSchema = z.object({
@@ -527,6 +542,7 @@ export const PreviewAdSchema = z.object({
     .array(z.string())
     .optional()
     .describe("Product item IDs for dynamic ads"),
+  access_token: z.string().optional().describe("Meta Marketing API access token (if not provided via environment)"),
 });
 
 // Type exports for runtime use

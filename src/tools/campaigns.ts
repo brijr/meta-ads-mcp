@@ -17,13 +17,13 @@ export function registerCampaignTools(
   server.tool(
     "list_campaigns",
     ListCampaignsSchema.shape,
-    async ({ account_id, status, limit, after }) => {
+    async ({ account_id, status, limit, after, access_token }) => {
       try {
         const result = await metaClient.getCampaigns(account_id, {
           status,
           limit,
           after,
-        });
+        }, access_token);
 
         const campaigns = result.data.map((campaign) => ({
           id: campaign.id,

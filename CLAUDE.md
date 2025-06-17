@@ -117,9 +117,11 @@ Resources provide contextual data access through URI patterns in `src/resources/
 - Graceful degradation with detailed error messages for debugging
 
 ### Authentication Flow
-- Environment-based configuration with secure credential management
-- Automatic token validation on startup with clear error messages
-- Support for multiple Meta Business accounts via configuration
+- Flexible authentication with both environment and per-request token support
+- Environment tokens validated on startup with clear error messages
+- Dynamic tokens can be provided with any tool call via `access_token` parameter
+- Support for multiple Meta Business accounts via configuration or dynamic tokens
+- No environment configuration required when using dynamic tokens
 
 ### Resource Pattern
 - URI-based resource access following RESTful patterns
@@ -129,11 +131,17 @@ Resources provide contextual data access through URI patterns in `src/resources/
 ## Configuration
 
 ### Required Environment Variables
-- `META_ACCESS_TOKEN` - Meta Marketing API access token (required)
+- `META_ACCESS_TOKEN` - Meta Marketing API access token (optional - can be provided per-request)
 - `META_APP_ID`, `META_APP_SECRET` - Optional for advanced authentication
 - `META_BUSINESS_ID` - Optional for multi-business account management
 - `META_API_VERSION` - API version (defaults to v23.0)
 - `META_API_TIER` - Rate limit tier: 'development' or 'standard'
+
+### Dynamic Authentication
+All tools accept an optional `access_token` parameter that overrides the environment token. This enables:
+- Multi-account management with different tokens
+- Enhanced security through token isolation
+- Temporary access without configuration changes
 
 ### Claude Desktop Integration
 The server integrates with Claude Desktop via MCP configuration in `claude_desktop_config.json`:
