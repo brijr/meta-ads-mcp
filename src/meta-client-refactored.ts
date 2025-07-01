@@ -18,9 +18,15 @@ export class MetaApiClient extends BaseApiClient {
   public readonly analytics: AnalyticsService;
   public readonly audiences: AudienceService;
   public readonly creatives: CreativeService;
+  
+  // Public auth property for compatibility
+  public readonly auth: AuthManager;
 
   constructor(auth?: AuthManager) {
     super(auth);
+    
+    // Assign auth for public access
+    this.auth = this.authManager;
     
     // Initialize all services with shared auth
     this.campaigns = new CampaignService(this.auth);

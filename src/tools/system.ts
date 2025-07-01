@@ -5,7 +5,6 @@
 
 import { z } from "zod";
 import { ToolFactory, createToolResponse } from "../utils/tool-factory.js";
-import { ResponseFormatter } from "../utils/response-formatter.js";
 import { config } from "../config/index.js";
 import { logger } from "../utils/logger.js";
 import type { MetaApiClient } from "../meta-client.js";
@@ -102,7 +101,6 @@ export function registerSystemTools(toolFactory: ToolFactory, metaClient: MetaAp
     z.object({}),
     async () => {
       const serverConfig = config.getServer();
-      const metaConfig = config.getMeta();
       const rateLimits = config.getRateLimits();
 
       const capabilities = {

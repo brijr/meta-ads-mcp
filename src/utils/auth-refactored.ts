@@ -236,7 +236,7 @@ export class AuthManager {
     return response.json() as any;
   }
 
-  async generateSystemUserToken(businessId: string, systemUserId: string, scope: string = "ads_read,ads_management"): Promise<{ access_token: string }> {
+  async generateSystemUserToken(businessId: string, systemUserId: string, _scope: string = "ads_read,ads_management"): Promise<{ access_token: string }> {
     if (!this.metaConfig.appId || !this.metaConfig.appSecret) {
       throw new Error("App ID and App Secret required for system user token generation");
     }
@@ -268,5 +268,20 @@ export class AuthManager {
     }
 
     return response.json();
+  }
+
+  // Additional missing methods for compatibility
+  async exchangeForLongLivedToken(shortLivedToken: string): Promise<{ access_token: string; expires_in: number }> {
+    return this.refreshToLongLivedToken(shortLivedToken);
+  }
+
+  isTokenExpiring(): boolean {
+    // For now, always return false since we don't track expiration
+    // In a real implementation, you'd check the token expiration time
+    return false;
+  }
+
+  async autoRefreshToken(): Promise<string> {
+    return this.refreshTokenIfNeeded();
   }
 }

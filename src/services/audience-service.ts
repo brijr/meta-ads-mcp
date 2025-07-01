@@ -5,7 +5,7 @@
 
 import { BaseApiClient } from "./base-api-client.js";
 import { PaginationHelper, type PaginationParams, type PaginatedResult } from "../utils/pagination.js";
-import type { CustomAudience, MetaApiResponse } from "../types/meta-api.js";
+import type { CustomAudience } from "../types/meta-api.js";
 
 export class AudienceService extends BaseApiClient {
 
@@ -181,8 +181,6 @@ export class AudienceService extends BaseApiClient {
     issues?: string[];
     suggestions?: string[];
   }> {
-    const formattedAccountId = this.getFormattedAccountId(accountId);
-    
     try {
       await this.getAudienceDeliveryEstimate(
         accountId,

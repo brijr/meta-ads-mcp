@@ -4,8 +4,8 @@
  */
 
 import { BaseApiClient } from "./base-api-client.js";
-import { PaginationHelper, type PaginationParams, type PaginatedResult } from "../utils/pagination.js";
-import type { AdInsights, MetaApiResponse } from "../types/meta-api.js";
+import { PaginationHelper, type PaginatedResult } from "../utils/pagination.js";
+import type { AdInsights } from "../types/meta-api.js";
 
 export class AnalyticsService extends BaseApiClient {
 

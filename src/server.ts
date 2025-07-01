@@ -7,8 +7,8 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { MetaApiClient } from "./meta-client-refactored.js";
-import { AuthManager } from "./utils/auth-refactored.js";
+import { MetaApiClient } from "./meta-client.js";
+import { AuthManager } from "./utils/auth.js";
 import { ToolFactory } from "./utils/tool-factory.js";
 import { config } from "./config/index.js";
 import { logger } from "./utils/logger.js";

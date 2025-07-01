@@ -8,7 +8,7 @@ import { AuthManager } from "../utils/auth.js";
 import { globalRateLimiter } from "../utils/rate-limiter.js";
 import { MetaApiErrorHandler, retryWithBackoff } from "../utils/error-handler.js";
 import { config } from "../config/index.js";
-import { logger, logApiCall, logApiResponse } from "../utils/logger.js";
+import { logApiCall, logApiResponse } from "../utils/logger.js";
 import type { MetaApiResponse } from "../types/meta-api.js";
 
 export class BaseApiClient {

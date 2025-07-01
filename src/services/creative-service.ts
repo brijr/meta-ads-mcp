@@ -6,7 +6,7 @@
 import { BaseApiClient } from "./base-api-client.js";
 import { PaginationHelper, type PaginationParams, type PaginatedResult } from "../utils/pagination.js";
 import { logger } from "../utils/logger.js";
-import type { AdCreative, MetaApiResponse } from "../types/meta-api.js";
+import type { AdCreative } from "../types/meta-api.js";
 
 export class CreativeService extends BaseApiClient {
 
@@ -174,7 +174,7 @@ export class CreativeService extends BaseApiClient {
 
   async uploadImageFile(
     accountId: string,
-    imageFile: File | Buffer,
+    imageFile: any, // Accept any type since we're working with different file types
     filename: string
   ): Promise<{ hash: string; url: string; name: string }> {
     const formattedAccountId = this.getFormattedAccountId(accountId);
@@ -261,7 +261,7 @@ export class CreativeService extends BaseApiClient {
 
   async getBestPractices(
     adFormat: string,
-    objective?: string
+    _objective?: string
   ): Promise<{
     format: string;
     recommendations: string[];

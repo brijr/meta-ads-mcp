@@ -37,13 +37,13 @@ export class ToolFactory {
     schema: z.ZodObject<any>,
     handler: ToolHandler<T>
   ): void {
-    this.server.tool(name, description, schema.shape, async (params: T) => {
+    this.server.tool(name, description, schema.shape, async (args: any) => {
       const context: ToolContext = { toolName: name, description };
       
       try {
-        logger.debug(`Executing tool: ${name}`, params);
+        logger.debug(`Executing tool: ${name}`, args);
         
-        const result = await handler(params, context);
+        const result = await handler(args as T, context);
         
         if (result.success) {
           logger.debug(`Tool ${name} completed successfully`);

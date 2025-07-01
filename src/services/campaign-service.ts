@@ -6,7 +6,7 @@
 import { BaseApiClient } from "./base-api-client.js";
 import { PaginationHelper, type PaginationParams, type PaginatedResult } from "../utils/pagination.js";
 import { logger } from "../utils/logger.js";
-import type { Campaign, AdSet, Ad, MetaApiResponse } from "../types/meta-api.js";
+import type { Campaign, AdSet, Ad } from "../types/meta-api.js";
 
 export class CampaignService extends BaseApiClient {
   
