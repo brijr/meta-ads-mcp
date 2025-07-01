@@ -336,7 +336,7 @@ This MCP server provides **25 comprehensive tools** across all major Meta advert
 Check the health of the Meta Marketing API server and authentication status
 ```
 
-### Analytics & Performance Insights  
+### Analytics & Performance Insights
 ```
 Get detailed performance insights for my Deal Draft campaign including impressions, clicks, ROAS, and CTR for the last 30 days
 ```
@@ -596,3 +596,100 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 **Built with ❤️ for the AI-powered advertising future**
+
+## Multi-Account Integration for External Apps
+
+This MCP server now supports **multi-account integration** for external applications, allowing users to authenticate via OAuth and chat with specific Meta ad accounts.
+
+### 🎯 Key Features
+
+- **User Authentication**: OAuth 2.0 flow for Meta account access
+- **Account Selection**: Users choose which ad account to work with
+- **Account-Scoped Chat**: Each user+account gets its own MCP server instance
+- **Session Management**: Secure session handling with Redis/Vercel KV
+- **External App API**: RESTful endpoints for easy integration
+
+### 🚀 Quick Start for External Apps
+
+1. **Start the Multi-Account MCP Server**:
+   ```bash
+   npm run start:multi-account
+   ```
+
+2. **Set up your Meta App** (in Facebook Developers):
+   ```bash
+   META_APP_ID=your_meta_app_id
+   META_APP_SECRET=your_meta_app_secret
+   META_REDIRECT_URI=https://your-app.com/auth/meta/callback
+   ```
+
+3. **Configure Storage** (Redis or Vercel KV):
+   ```bash
+   REDIS_URL=redis://localhost:6379
+   # OR
+   KV_REST_API_URL=your-vercel-kv-url
+   ```
+
+4. **Integrate with your app**:
+   ```typescript
+   import { ExternalAppClient } from './src/client/external-app-client.js';
+
+   const mcpClient = new ExternalAppClient('http://localhost:3001');
+
+   // Start OAuth flow
+   const authUrl = await mcpClient.startAuth('https://your-app.com/callback');
+
+   // Handle callback
+   const session = await mcpClient.handleAuthCallback(code, state);
+
+   // Select account
+   await mcpClient.setupAccountMcp(sessionId, accountId);
+   ```
+
+### 📱 Integration Flow
+
+```
+Your App → OAuth Flow → Account Selection → Account-Scoped Chat
+    ↓           ↓              ↓                    ↓
+  User Login  Meta Auth    Choose Account    Chat with Account
+```
+
+1. **User Authentication**: Direct users to Meta OAuth
+2. **Account Discovery**: Show available ad accounts
+3. **Account Selection**: User picks which account to work with
+4. **Chat Session**: Account-scoped MCP tools available
+
+### 🔧 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/external/auth` | Start OAuth flow |
+| `GET` | `/api/external/auth` | Handle OAuth callback |
+| `GET` | `/api/external/accounts` | Get user's accounts |
+| `POST` | `/api/external/accounts` | Select an account |
+| `POST` | `/api/external/mcp` | Create MCP connection |
+| `DELETE` | `/api/external/mcp` | Cleanup session |
+
+### 📚 Documentation & Examples
+
+- **[Complete Integration Guide](docs/multi-account-integration.md)** - Detailed setup instructions
+- **[Example Implementations](examples/external-app-integration.ts)** - Express.js, React, and Node.js examples
+- **[Client Library](src/client/external-app-client.ts)** - Ready-to-use TypeScript client
+
+### 🔒 Security Features
+
+- OAuth 2.0 with CSRF protection
+- Secure session management
+- Account access validation
+- Rate limiting support
+- CORS configuration
+
+### 🌟 Benefits for External Apps
+
+- **No Direct API Keys**: Users authenticate with their own Meta accounts
+- **Account Isolation**: Each chat session is scoped to one account
+- **Scalable**: Handles multiple users and accounts simultaneously
+- **Secure**: Industry-standard OAuth and session management
+- **Easy Integration**: Simple REST API and client libraries
+
+For detailed integration instructions, see [docs/multi-account-integration.md](docs/multi-account-integration.md).
