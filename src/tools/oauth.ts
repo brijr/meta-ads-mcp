@@ -2,10 +2,10 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { AuthManager } from "../utils/auth.js";
 import {
   GenerateAuthUrlSchema,
-  ExchangeCodeSchema,
-  RefreshTokenSchema,
-  GenerateSystemTokenSchema,
-} from "../types/mcp-tools.js";
+  ExchangeCodeForTokenSchema,
+  RefreshToLongLivedTokenSchema,
+  GenerateSystemUserTokenSchema,
+} from "../types/schemas.js";
 
 export function registerOAuthTools(
   server: McpServer,
@@ -15,14 +15,14 @@ export function registerOAuthTools(
   server.tool(
     "generate_auth_url",
     GenerateAuthUrlSchema.shape,
-    async ({ scopes, state }) => {
+    async ({ scope, state }) => {
       try {
-        const authUrl = authManager.generateAuthUrl(scopes, state);
+        const authUrl = await authManager.generateAuthUrl(scope, state);
 
         const response = {
           success: true,
           authorization_url: authUrl,
-          scopes_requested: scopes,
+          scopes_requested: scope,
           instructions: [
             "1. Open the authorization URL in a web browser",
             "2. Log in to your Facebook account",
@@ -33,7 +33,7 @@ export function registerOAuthTools(
           security_note: state
             ? "State parameter included for CSRF protection"
             : "Consider adding a state parameter for additional security",
-          redirect_uri: authManager["config"].redirectUri,
+          redirect_uri: authManager.getRedirectUri(),
         };
 
         return {
@@ -63,7 +63,7 @@ export function registerOAuthTools(
   // Exchange Authorization Code for Token Tool
   server.tool(
     "exchange_code_for_token",
-    ExchangeCodeSchema.shape,
+    ExchangeCodeForTokenSchema.shape,
     async ({ code }) => {
       try {
         const result = await authManager.exchangeCodeForToken(code);
@@ -72,12 +72,10 @@ export function registerOAuthTools(
           success: true,
           message: "Authorization code exchanged successfully",
           token_info: {
-            access_token: result.accessToken,
-            token_type: result.tokenType,
-            expires_in: result.expiresIn,
-            expires_at: result.expiresIn
-              ? new Date(Date.now() + result.expiresIn * 1000).toISOString()
-              : undefined,
+            access_token: result.access_token,
+            token_type: result.token_type,
+            expires_in: undefined,
+            expires_at: undefined,
           },
           next_steps: [
             "Token is now active and will be used for API calls",
@@ -118,7 +116,7 @@ export function registerOAuthTools(
   // Refresh to Long-Lived Token Tool
   server.tool(
     "refresh_to_long_lived_token",
-    RefreshTokenSchema.shape,
+    RefreshToLongLivedTokenSchema.shape,
     async ({ short_lived_token }) => {
       try {
         const result = await authManager.exchangeForLongLivedToken(
@@ -129,17 +127,17 @@ export function registerOAuthTools(
           success: true,
           message: "Token successfully exchanged for long-lived token",
           token_info: {
-            access_token: result.accessToken,
-            token_type: result.tokenType,
-            expires_in: result.expiresIn,
+            access_token: result.access_token,
+            token_type: "Bearer",
+            expires_in: result.expires_in,
             expires_at: new Date(
-              Date.now() + result.expiresIn * 1000
+              Date.now() + result.expires_in * 1000
             ).toISOString(),
             lifetime: "Approximately 60 days",
           },
           token_management: {
-            auto_refresh_enabled: authManager["config"].autoRefresh || false,
-            current_expiration: authManager["config"].tokenExpiration?.toISOString(),
+            auto_refresh_enabled: authManager.isAutoRefreshEnabled(),
+            current_expiration: undefined,
             refresh_recommendation:
               "Set up automatic refresh or manually refresh before expiration",
           },
@@ -176,13 +174,13 @@ export function registerOAuthTools(
   // Generate System User Token Tool
   server.tool(
     "generate_system_user_token",
-    GenerateSystemTokenSchema.shape,
-    async ({ system_user_id, scopes, expiring_token }) => {
+    GenerateSystemUserTokenSchema.shape,
+    async ({ system_user_id, scope, business_id }) => {
       try {
         const result = await authManager.generateSystemUserToken(
+          business_id,
           system_user_id,
-          scopes,
-          expiring_token
+          scope
         );
 
         const response = {
@@ -190,16 +188,14 @@ export function registerOAuthTools(
           message: `System user token generated successfully`,
           system_user_id,
           token_info: {
-            access_token: result.accessToken,
-            token_type: result.tokenType,
-            expires_in: result.expiresIn,
-            expires_at: result.expiresIn
-              ? new Date(Date.now() + result.expiresIn * 1000).toISOString()
-              : "Never (non-expiring token)",
-            scopes: scopes,
+            access_token: result.access_token,
+            token_type: "Bearer",
+            expires_in: undefined,
+            expires_at: "Never (non-expiring token)",
+            scopes: scope,
           },
           token_characteristics: {
-            type: expiring_token ? "Expiring (60 days)" : "Non-expiring",
+            type: "Non-expiring",
             use_case: "Server-to-server automation",
             security_level: "High - requires Business Manager admin access",
           },
@@ -207,9 +203,7 @@ export function registerOAuthTools(
             "Store the system user token securely",
             "Use for automated, server-side operations",
             "Monitor token usage and permissions",
-            expiring_token
-              ? "Set up refresh mechanism before 60-day expiration"
-              : "Non-expiring tokens require manual revocation if compromised",
+            "Non-expiring tokens require manual revocation if compromised",
           ],
         };
 
@@ -248,17 +242,15 @@ export function registerOAuthTools(
         const response = {
           token_info: tokenInfo,
           current_config: {
-            has_app_credentials: !!(
-              authManager["config"].appId && authManager["config"].appSecret
-            ),
-            has_redirect_uri: !!authManager["config"].redirectUri,
-            auto_refresh_enabled: !!authManager["config"].autoRefresh,
-            token_expiration: authManager["config"].tokenExpiration?.toISOString(),
+            has_app_credentials: authManager.hasOAuthCredentials(),
+            has_redirect_uri: !!authManager.getRedirectUri(),
+            auto_refresh_enabled: authManager.isAutoRefreshEnabled(),
+            token_expiration: undefined,
           },
           token_status: {
             is_valid: tokenInfo.isValid,
-            is_expiring_soon: authManager.isTokenExpiring(60), // 1 hour buffer
-            requires_refresh: authManager.isTokenExpiring(5), // 5 minute buffer
+            is_expiring_soon: authManager.isTokenExpiring(),
+            requires_refresh: authManager.isTokenExpiring(),
           },
           recommendations: generateTokenRecommendations(tokenInfo, authManager),
         };
@@ -350,16 +342,16 @@ function generateTokenRecommendations(
     recommendations.push("Check app credentials and permissions");
   }
 
-  if (authManager.isTokenExpiring(60)) {
-    recommendations.push("Token expires within 1 hour - refresh recommended");
+  if (authManager.isTokenExpiring()) {
+    recommendations.push("Token may be expiring - consider refreshing");
   }
 
-  if (!authManager["config"].autoRefresh) {
+  if (!authManager.isAutoRefreshEnabled()) {
     recommendations.push("Enable auto-refresh to prevent token expiration");
     recommendations.push("Set META_AUTO_REFRESH=true in environment variables");
   }
 
-  if (!authManager["config"].appId || !authManager["config"].appSecret) {
+  if (!authManager.hasOAuthCredentials()) {
     recommendations.push("Configure app credentials for token refresh capabilities");
     recommendations.push("Set META_APP_ID and META_APP_SECRET environment variables");
   }

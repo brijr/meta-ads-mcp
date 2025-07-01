@@ -70,8 +70,8 @@ export class ToolFactory {
     schema: z.ZodObject<any>,
     handler: (params: T) => Promise<any>
   ): void {
-    this.registerTool(name, description, schema, async (params) => {
-      const data = await handler(params);
+    this.registerTool(name, description, schema, async (params: any) => {
+      const data = await handler(params as T);
       return { success: true, data };
     });
   }
