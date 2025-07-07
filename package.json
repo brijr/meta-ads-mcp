@@ -1,56 +1,25 @@
 {
-  "name": "meta-ads-mcp",
-  "version": "1.7.0",
-  "description": "Model Context Protocol server for Meta Marketing API integration",
-  "main": "build/index.js",
-  "type": "module",
-  "bin": {
-    "meta-ads-mcp": "build/index.js"
+  "name": "meta-mcp",
+  "version": "0.1.0",
+  "description": "An XMCP application with tool syntax",
+  "engines": {
+    "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsx src/index.ts",
-    "dev:vercel": "vercel dev",
-    "test": "jest",
-    "lint": "eslint src/**/*.ts",
-    "prepare": "npm run build",
-    "vercel-build": "npm run build",
-    "setup": "node scripts/setup-mcp.js",
-    "setup:mcp": "node scripts/setup-mcp.js",
-    "health-check": "node scripts/health-check.js",
-    "check": "node scripts/health-check.js"
+    "build": "xmcp build",
+    "dev": "xmcp dev",
+    "start-http": "node dist/http.js",
+    "start-stdio": "node dist/stdio.js"
   },
-  "author": "Meta Ads MCP",
-  "license": "MIT",
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "meta",
-    "facebook",
-    "instagram",
-    "advertising",
-    "marketing-api"
-  ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.0",
-    "@vercel/kv": "^3.0.0",
-    "@vercel/mcp-adapter": "^0.11.2",
-    "jose": "^6.0.11",
-    "node-fetch": "^3.3.2",
-    "redis": "^5.5.6",
-    "zod": "^3.25.75"
+    "zod": "3.24.4",
+    "xmcp": "latest"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "@types/node": "^20.19.4",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
-    "eslint": "^8.57.1",
-    "jest": "^29.7.0",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "swc-loader": "^0.2.6"
   },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "main": "./dist/stdio.js",
+  "files": [
+    "dist"
+  ]
 }

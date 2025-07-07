@@ -1,33 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
+    "target": "es2016",
+    "module": "commonjs",
     "esModuleInterop": true,
-    "allowJs": true,
-    "outDir": "./build",
-    "rootDir": "./src",
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleDetection": "force",
-    "allowImportingTsExtensions": false,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "rootDir": "./src"
   },
   "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    "tests"
+    "xmcp-env.d.ts",
+    "src/**/*.ts"
   ]
 }
