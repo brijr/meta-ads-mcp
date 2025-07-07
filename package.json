@@ -9,14 +9,25 @@
     "build": "xmcp build",
     "dev": "xmcp dev",
     "start-http": "node dist/http.js",
-    "start-stdio": "node dist/stdio.js"
+    "start-stdio": "node dist/stdio.js",
+    "start-oauth": "node dist/oauth-server.js",
+    "dev-oauth": "ts-node src/oauth-server.ts"
   },
   "dependencies": {
     "zod": "3.24.4",
-    "xmcp": "latest"
+    "xmcp": "latest",
+    "facebook-nodejs-business-sdk": "^23.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1"
   },
   "devDependencies": {
-    "swc-loader": "^0.2.6"
+    "swc-loader": "^0.2.6",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/facebook-nodejs-business-sdk": "^23.0.0",
+    "ts-node": "^10.9.2"
   },
   "main": "./dist/stdio.js",
   "files": [

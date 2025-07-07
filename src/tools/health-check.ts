@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { type InferSchema } from "xmcp";
-import { XMCPAuthMiddleware } from "@/lib/shared/auth-middleware";
+import { XMCPAuthMiddleware } from "@/lib/shared/xmcp-auth-middleware";
 
 export const schema = {};
 
@@ -23,7 +23,7 @@ export default async function healthCheck(_args: InferSchema<typeof schema>, con
     
     // Get authentication context if available
     const headers = context?.headers || {};
-    const auth = await XMCPAuthMiddleware.getAuthContext(headers);
+    const authResult = await XMCPAuthMiddleware.validateAccessToken(headers);
 
     return {
       content: [
@@ -32,21 +32,20 @@ export default async function healthCheck(_args: InferSchema<typeof schema>, con
           text: JSON.stringify(
             {
               success: true,
-              server_name: "Offer Arc Meta Marketing API",
-              version: "2.0.0",
+              server_name: "Meta MCP Server",
+              version: "1.0.0",
               timestamp: new Date().toISOString(),
               response_time_ms: responseTime,
               status: "healthy",
-              message: "MCP server is running with xmcp adapter",
+              message: "Meta MCP server is running with OAuth authentication",
               authentication: {
-                authenticated: !!auth,
-                userId: auth?.userId || null,
-                orgId: auth?.orgId || null,
+                authenticated: authResult.isValid,
+                userId: authResult.userId || null,
+                error: authResult.error || null,
               },
               endpoints: {
-                http: `${
-                  process.env.NEXT_PUBLIC_APP_URL || "https://offerarc.com"
-                }/mcp`,
+                http: `http://localhost:3002`,
+                oauth: `http://localhost:3003`,
               },
             },
             null,
@@ -56,6 +55,21 @@ export default async function healthCheck(_args: InferSchema<typeof schema>, con
       ],
     };
   } catch (error) {
-    return XMCPAuthMiddleware.createErrorResponse(error, "Health check failed");
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(
+            {
+              success: false,
+              error: error.message,
+              timestamp: new Date().toISOString(),
+            },
+            null,
+            2
+          ),
+        },
+      ],
+    };
   }
 }

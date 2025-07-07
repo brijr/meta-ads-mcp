@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:xmcp.dev)"
+      "WebFetch(domain:xmcp.dev)",
+      "Bash(grep:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }

@@ -54,6 +54,36 @@ Tools receive parameters as first argument and context as second argument. The c
 - Both HTTP and STDIO transports are supported
 - Authentication is handled via headers passed in the context
 
+## OAuth Authentication
+
+The server now supports OAuth2 authentication with Facebook:
+
+### Setup Commands
+```bash
+# Copy environment template
+cp .env.example .env
+
+# Install dependencies
+pnpm install
+
+# Start OAuth server (port 3003)
+pnpm dev-oauth
+
+# Start XMCP server (port 3002)
+pnpm dev
+```
+
+### Authentication Flow
+1. Direct users to `/auth/facebook?user_id=USER_ID` on OAuth server
+2. Handle callback at `/auth/facebook/callback`
+3. Include access token in MCP tool headers: `Authorization: Bearer TOKEN`
+
+### Key Environment Variables
+- `META_APP_ID` - Facebook app ID
+- `META_APP_SECRET` - Facebook app secret
+- `META_REDIRECT_URI` - OAuth callback URL
+- `TOKEN_ENCRYPTION_KEY` - Token encryption key (32+ chars)
+
 ## Important Notes
 
 - No test framework is currently set up
@@ -61,3 +91,5 @@ Tools receive parameters as first argument and context as second argument. The c
 - TypeScript strict mode is enabled
 - All tools should be idempotent where possible
 - Tools interacting with Meta API should use the provided MetaContext wrapper
+- OAuth authentication is required for all Meta API operations
+- See README-OAUTH.md for complete authentication setup guide
