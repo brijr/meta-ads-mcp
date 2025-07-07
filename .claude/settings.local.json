@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:xmcp.dev)"
+    ],
+    "deny": []
+  }
+}

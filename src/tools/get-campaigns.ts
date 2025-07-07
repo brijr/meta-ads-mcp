@@ -25,9 +25,12 @@ export const metadata = {
   },
 };
 
-export default async function getCampaigns({ account_id, limit, status }: InferSchema<typeof schema>, context: any) {
+export default async function getCampaigns(
+  { account_id, limit, status }: InferSchema<typeof schema>,
+  context: any,
+) {
   const headers = context?.headers || {};
-  
+
   return MetaContext.withClient(headers, async (client) => {
     const filters: Record<string, string[]> = {};
     if (status) {
